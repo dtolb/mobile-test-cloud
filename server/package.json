@@ -1,0 +1,23 @@
+{
+  "name": "mobile-test-cloud",
+  "version": "1.0.0",
+  "description": "Roll your own test cloud with appium and OSX",
+  "main": "app.js",
+  "scripts": {
+    "test": "grunt"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://dtolb@bitbucket.org/dtolb/mobile-test-cloud.git"
+  },
+  "author": "Daniel Tolbert",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.12.2",
+    "express": "^4.12.3",
+    "morgan": "^1.5.2",
+    "path": "^0.11.14",
+    "sprintf-js": "^1.0.2",
+    "winston": "^1.0.0"
+  }
+}

@@ -2,6 +2,7 @@ var express     = require('express');
 var logger      = require('../../logging.js').winstonLogger;
 var sprintf     = require('sprintf-js').sprintf;
 var fs          = require('fs');
+var Joi         = require('joi');
 var config      = require('../../config.js');
 var url         = require('url');
 
@@ -11,7 +12,24 @@ var url         = require('url');
  * @param  {[type]}   res  [response object]
  * @param  {Function} next [function pointer to next middleware]
  */
-module.exports.validateUser = function (req, res, next) {};
+module.exports.validateUser = function (req, res, next) {
+	//need to implement
+	next();
+};
+
+/**
+ * Validates the JSON request meets requirements
+ * @param  {[type]}   req  [request object]
+ * @param  {[type]}   res  [response object]
+ * @param  {Function} next [function pointer to next middleware]
+ */
+module.exports.validateRequest = function (req, res, next) {
+	var reqSchema = Joi.object.keys({
+		os: Joi.string().regex(/(android)|(ios)|(Android)|(iOS)/),
+		devices: Joi.array(),
+
+	});
+};
 
 /**
  * Process the JSON request and put information in the req object

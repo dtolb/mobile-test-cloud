@@ -1,0 +1,15 @@
+{
+	"os" : "iOS",
+	"devices": ["iPhone 5c", "iPhone 6+"],
+	"emulators" : {
+		"iOS 8.2" : {
+			"models" : ["iPhone 6", "iPhone 5s"]
+		},
+		"iOS 7.1" : {
+			"models" : ["iPhone 4s"]
+		}
+	},
+	"app" : "https://s3.amazonaws.com/ios-apps/MyApp.app",
+	"tests" : "https://github.com/awesomeness/ios-mobile-tests.git",
+	"pullrequestURL" : "" //added by travis
+}

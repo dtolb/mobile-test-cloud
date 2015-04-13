@@ -10,7 +10,8 @@ var router  = module.exports = express.Router();
 
 router.route('/run')
 	.post(
-		test.validateUser, //Need to add
+		tester.validateUser, //Need to add
+		tester.validateRequest,
 		tester.processRequest,
 		tester.getApps,
 		tester.getTests,

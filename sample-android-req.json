@@ -1,0 +1,15 @@
+{
+	"os" : "Android",
+	"devices": ["moto-x", "Galaxy-s3"],
+	"emulators" : {
+		"5.0.1" : {
+			"models" : ["Nexus 5", "Nexus 10"]
+		},
+		"4.4.4" : {
+			"models" : ["Nexus 4"]
+		}
+	},
+	"app" : "https://s3.amazonaws.com/test-cloud-apps/MyApp.apk",
+	"tests" : "https://github.com/awesomeness/android-mobile-tests.git",
+	"pullrequestURL" : "" //added by travis
+}

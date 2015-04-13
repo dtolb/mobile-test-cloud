@@ -16,7 +16,7 @@ config = {
 	},
 	logging: {
 		request: {
-			level: process.env.REQUEST_LOG_LEVEL || 'default'
+			level: process.env.REQUEST_LOG_LEVEL || 'combined'
 		},
 		app: {
 			level: process.env.APP_LOG_LEVEL || 'info'

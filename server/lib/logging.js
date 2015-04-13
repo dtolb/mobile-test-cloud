@@ -12,10 +12,6 @@ module.exports.createWinstonLogger = function (loggingConfig) {
 		]
 	});
 
-	if (typeof(loggingConfig.logentries.token) !== 'undefined') {
-		winstonLogger.add(Logentries, loggingConfig.logentries);
-	}
-
 	return winstonLogger;
 };
 

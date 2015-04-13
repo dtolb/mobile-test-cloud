@@ -10,7 +10,6 @@ var logger = logging.winstonLogger;
 app.use(logging.requestLogger);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
-app.use(bodyParser.raw({limit: catapult.maxMediumSize}));
 
 /******************************************************************************
  * Set up routes

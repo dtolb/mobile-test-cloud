@@ -10,6 +10,6 @@
 		}
 	},
 	"app" : "https://s3.amazonaws.com/test-cloud-apps/MyApp.apk",
-	"tests" : "https://github.com/awesomeness/android-mobile-tests.git",
-	"pullrequestURL" : "" //added by travis
+	"testDirectory" : "./tests", //location of tests within repo
+	"pullRequest" : "" //added by travis
 }

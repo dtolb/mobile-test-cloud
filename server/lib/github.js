@@ -3,10 +3,18 @@ var logger  = require('../logging.js').winstonLogger;
 var config = require('./config.js');
 var Promise = require('bluebird');
 var NodeGit = require("nodegit");
-var exec = require('exec');
+var shelljs = require('shelljs');
 
 var github = new GitHubApi({version: "3.0.0"});
 Promise.promisifyAll(github.statuses);
+
+// Create a new object, that prototypally inherits from the Error constructor.
+function githubStatusError(message) {
+  this.name = 'StatusUpdateError';
+  this.message = message || 'Failed to update status';
+}
+githubStatusError.prototype = Object.create(Error.prototype);
+githubStatusError.prototype.constructor = githubStatusError;
 
 github.authenticate({
   type: "basic",
@@ -81,10 +89,43 @@ module.exports.setInitialStatus = function (testInfo) {
   return setCommitStatus(testInfo, status);
 };
 
-module.exports.cloneRepo = function (testInfo) {
-  var bash = sprintf('git clone -b %s %s %s',
-    testInfo.github.branch, testInfo.github.gitURL, config.directories.repos);
-  exec(bash, function (err, out, code) {
+/**
+ * Sets the commit status to 'error' and provided description
+ * @param {[JSON]} testInfo    [our test tracker]
+ * @param {[string]} description [describe the fail, most likely error]
+ */
+module.exports.setErrorStatus = function (testInfo, description) {
+  var status = {
+    status: 'error',
+    description: description
+  };
+  return setCommitStatus(testInfo, status);
+};
 
+/**
+ * Clones the repository and branch from the pull request
+ * @param  {[type]} testInfo [description]
+ * @return {[type]}          [description]
+ */
+module.exports.cloneRepo = function (testInfo) {
+  return new Promise(function(resolve, reject) {
+    logger.debug('Starting repository clone!');
+    var repoPath = path.join(config.directories.repos, testInfo.github.repo);
+    var bash = sprintf('git clone -b %s %s %s',
+      testInfo.github.branch, testInfo.github.gitURL, repoPath);
+    shelljs.exec(bash, function (code, output) {
+      if (code !== 0) {
+        logger.error('Cloning Repo Failed!!');
+        var error = new Error('Failed to clone repo');
+        reject(error);
+      }
+      else {
+        logger.debug('Cloned Repo!');
+        testInfo.local = {
+          repo: repoPath
+        };
+        resolve(testInfo);
+      }
+    });
   });
 };

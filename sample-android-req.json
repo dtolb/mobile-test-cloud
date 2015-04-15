@@ -9,7 +9,5 @@
 			"models" : ["Nexus 4"]
 		}
 	},
-	"app" : "https://s3.amazonaws.com/test-cloud-apps/MyApp.apk",
 	"testDirectory" : "./tests", //location of tests within repo
-	"pullRequest" : "" //added by travis
 }

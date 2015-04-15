@@ -6,8 +6,6 @@ module.exports.start = function(webhook) {
   var testInfo = github.processWebhook(webhook);
   github.setInitialStatus(testInfo)
     .then(github.cloneRepo)
-    .then(function () {
-        utils.locateTestConfig(testInfo);
-    })
-  
+    .then(utils.locateTestConfig)
+    .catch();
 };

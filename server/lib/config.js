@@ -27,7 +27,8 @@ config = {
     repos: path.join(__dirname,'./../../tmp/repos'),
   },
   s3: {},
-  github: {}
+  github: {},
+  testFileRegex: /mtc_config.json$/
 };
 
 testConfig = {

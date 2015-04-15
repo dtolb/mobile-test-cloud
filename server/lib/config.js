@@ -51,8 +51,8 @@ testConfig = {
 		}
 	},
 	directories: {
-		tests: './fetched-tests',
-		repos: './fetched-repos'
+		tests: path.join(__dirname,'./../../tmp/tests'),
+		repos: path.join(__dirname,'./../../tmp/repos'),
 	},
 	github: {
 		username: 'dtolb',

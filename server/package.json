@@ -28,6 +28,8 @@
   "devDependencies": {
     "chai": "^2.2.0",
     "mocha": "^2.2.4",
-    "node-fixtures": "0.0.1"
+    "nock": "^1.6.0",
+    "node-fixtures": "0.0.1",
+    "sinon": "^1.14.1"
   }
 }

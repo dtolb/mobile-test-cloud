@@ -3,22 +3,23 @@ var logger  = require('./logging.js').winstonLogger;
 var config = require('./config.js');
 var Promise = require('bluebird');
 var shelljs = require('shelljs');
+var sprintf = require('sprintf-js').sprintf;
+var path = require('path');
 
-var github;
 
-/*// Create a new object, that prototypally inherits from the Error constructor.
-function githubStatusError(message) {
-	this.name = 'StatusUpdateError';
-	this.message = message || 'Failed to update status';
-}
-githubStatusError.prototype = Object.create(Error.prototype);
-githubStatusError.prototype.constructor = githubStatusError;*/
+// Create a new object, that prototypally inherits from the Error constructor.
+module.exports.GithubStatusError = function(message) {
+	this.name = 'GithubStatusError';
+	this.message = message || 'Failed to update GitHub status';
+};
+module.exports.GithubStatusError.prototype = Object.create(Error.prototype);
+module.exports.GithubStatusError.prototype.constructor = module.exports.GithubStatusError;
 
 /**
  * Establishes the github API connection
  */
-module.exports.connectToGithub = function (){
-	new GitHubApi({version: "3.0.0"});
+/*module.exports.connectToGithub = function (){
+	github = new GitHubApi({version: "3.0.0"});
 	github.authenticate({
 		type: "basic",
 		username: config.github.username,
@@ -26,6 +27,14 @@ module.exports.connectToGithub = function (){
 	});
 	Promise.promisifyAll(github.statuses);
 };
+*/
+module.exports.githubapi = new GitHubApi({version: "3.0.0"});
+module.exports.githubapi.authenticate({
+	type: "basic",
+	username: config.github.username,
+	password: config.github.password
+});
+Promise.promisifyAll(module.exports.githubapi.statuses);
 
 
 /**
@@ -61,42 +70,40 @@ module.exports.processWebhook = function(webhook) {
 /**
  * Sets the status of the Head commit from PR
  * @param  {[JSON]} testInfo [Our test tracker]
- * @param  {[JSON]} status   [Json object with status and description]
+ * @param  {[JSON]} status   [Json object with status and description<optional>]
+ *         {status: 'status', description:'describe'}
  * @return {promise}
  */
-var setCommitStatus = function(testInfo, status) {
+module.exports.setCommitStatus = function(testInfo, status) {
 	if (typeof status.description === 'undefined') {
 		status.description = status.status;
+	}
+
+	var targetUrl;
+
+	if(typeof testInfo.s3 === 'undefined' || typeof testInfo.s3.location === 'undefined') {
+		targetUrl = '';
+	}
+	else {
+		targetUrl = testInfo.s3.location;
 	}
 
 	var gitMessage = {
 		user: testInfo.github.user,
 		repo: testInfo.github.repo,
 		sha: testInfo.github.sha,
-		state: status,
-		target_url: testInfo.s3.location,
-		description: description,
+		state: status.status,
+		target_url: targetUrl,
+		description: status.description,
 		context: 'Mobile Test Cloud'
 	};
 
- return github.statuses.createAsync(gitMessage)
+ return module.exports.githubapi.statuses.createAsync(gitMessage)
 	.return(testInfo)
 	.catch(function (e) {
-		throw new Error();
+		logger.error('failed to update commit status');
+		throw new module.exports.GithubStatusError();
 	});
-
-/*	github.statuses.createAsync(gitMessage)
-		.then(function () {
-			logger.debug(sprintf('Updated commit: %s to status %s'), gitMessage.sha, gitMessage.state);
-			resolve(testInfo);
-		})
-		.catch(function (e) {
-			logger.error(
-				sprintf('Failed to update commit: %s to status %s'), gitMessage.sha, gitMessage.state);
-			logger.error(e);
-			var error = new Error('Failed to update github status');
-			reject(error);
-		});*/
 };
 
 /**
@@ -108,7 +115,7 @@ module.exports.setInitialStatus = function (testInfo) {
 		status: 'pending',
 		description: 'Starting Mobile Test Cloud!'
 	};
-	return setCommitStatus(testInfo, status);
+	return module.exports.setCommitStatus(testInfo, status);
 };
 
 /**
@@ -121,7 +128,7 @@ module.exports.setErrorStatus = function (testInfo, description) {
 		status: 'error',
 		description: description
 	};
-	return setCommitStatus(testInfo, status);
+	return module.exports.setCommitStatus(testInfo, status);
 };
 
 /**
@@ -135,19 +142,18 @@ module.exports.cloneRepo = function (testInfo) {
 		var repoPath = path.join(config.directories.repos, testInfo.github.repo);
 		var bash = sprintf('git clone -b %s %s %s',
 			testInfo.github.branch, testInfo.github.gitURL, repoPath);
-		shelljs.exec(bash, function (code, output) {
-			if (code !== 0) {
-				logger.error('Cloning Repo Failed!!');
-				var error = new Error('Failed to clone repo');
-				reject(error);
-			}
-			else {
-				logger.debug('Cloned Repo!');
-				testInfo.local = {
-					repo: repoPath
-				};
-				resolve(testInfo);
-			}
-		});
+		var cloneResult = shelljs.exec(bash).code;
+		if (cloneResult !== 0) {
+			logger.error('Cloning Repo Failed!!');
+			var error = new Error('Failed to clone repo');
+			reject(error);
+		}
+		else {
+			logger.debug('Cloned Repo!');
+			testInfo.local = {
+				repo: repoPath
+			};
+			resolve(testInfo);
+		}
 	});
 };

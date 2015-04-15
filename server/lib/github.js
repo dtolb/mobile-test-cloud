@@ -3,6 +3,7 @@ var logger  = require('../logging.js').winstonLogger;
 var config = require('./config.js');
 var Promise = require('bluebird');
 var NodeGit = require("nodegit");
+var exec = require('exec');
 
 var github = new GitHubApi({version: "3.0.0"});
 Promise.promisifyAll(github.statuses);
@@ -25,7 +26,8 @@ module.exports.processWebhook = function(webhook) {
       sha: webhook.pull_request.head.sha,
       PRnumber: webhook.number,
       user: webhook.pull_request.head.user.login,
-      gitURL: webhook.pull_request.head.repo.ssh_url
+      gitURL: webhook.pull_request.head.repo.ssh_url,
+      branch: webhook.pull_request.head.ref
     }
   };
 };
@@ -80,5 +82,9 @@ module.exports.setInitialStatus = function (testInfo) {
 };
 
 module.exports.cloneRepo = function (testInfo) {
-  
-}
+  var bash = sprintf('git clone -b %s %s %s',
+    testInfo.github.branch, testInfo.github.gitURL, config.directories.repos);
+  exec(bash, function (err, out, code) {
+
+  });
+};

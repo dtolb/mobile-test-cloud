@@ -23,8 +23,8 @@ config = {
     }
   },
   directories: {
-    tests: process.env.TESTS_DIR,
-    repos: process.env.REPOS_DIR,
+    tests: path.join(__dirname,'./../../tmp/tests'),
+    repos: path.join(__dirname,'./../../tmp/repos'),
   },
   s3: {},
   github: {}

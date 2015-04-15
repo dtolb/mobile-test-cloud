@@ -17,3 +17,9 @@ console.log('-------------------------');
 }
 }
 exec(bash,cb);
+
+var glob = require('glob');
+var opts = {
+cwd: './../'
+};
+var g = glob.sync('mtc_config.json', opts);

@@ -27,7 +27,13 @@ config = {
 		repos: path.join(__dirname,'./../../tmp/repos'),
 	},
 	s3: {},
-	github: {},
+	github: {
+		username:  process.env.GITHUB_USERNAME,
+		password:  process.env.GITHUB_PASSWORD,
+		pullRequest: {
+			runOn: ['opened', 'reopened', 'synchronize']
+		}
+	},
 	testConfigFileName: 'mtc_config.json'
 };
 
@@ -47,7 +53,14 @@ testConfig = {
 	directories: {
 		tests: './fetched-tests',
 		repos: './fetched-repos'
-	}
+	},
+	github: {
+		username: 'dtolb',
+		password: 'password',
+		pullRequest: {
+			runOn: ['opened', 'reopened', 'synchronize']
+		}
+	},
 };
 
 module.exports = (process.env.NODE_ENV === 'test') ? testConfig : config;

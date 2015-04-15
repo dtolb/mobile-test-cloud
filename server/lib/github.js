@@ -1,26 +1,32 @@
 var GitHubApi = require('github');
-var logger  = require('../logging.js').winstonLogger;
+var logger  = require('./logging.js').winstonLogger;
 var config = require('./config.js');
 var Promise = require('bluebird');
-var NodeGit = require("nodegit");
 var shelljs = require('shelljs');
 
-var github = new GitHubApi({version: "3.0.0"});
-Promise.promisifyAll(github.statuses);
+var github;
 
-// Create a new object, that prototypally inherits from the Error constructor.
+/*// Create a new object, that prototypally inherits from the Error constructor.
 function githubStatusError(message) {
 	this.name = 'StatusUpdateError';
 	this.message = message || 'Failed to update status';
 }
 githubStatusError.prototype = Object.create(Error.prototype);
-githubStatusError.prototype.constructor = githubStatusError;
+githubStatusError.prototype.constructor = githubStatusError;*/
 
-github.authenticate({
-	type: "basic",
-	username: config.github.username,
-	password: config.github.password
-});
+/**
+ * Establishes the github API connection
+ */
+module.exports.connectToGithub = function (){
+	new GitHubApi({version: "3.0.0"});
+	github.authenticate({
+		type: "basic",
+		username: config.github.username,
+		password: config.github.password
+	});
+	Promise.promisifyAll(github.statuses);
+};
+
 
 /**
  * Takes the pull request webhook and gets relevant information
@@ -28,16 +34,28 @@ github.authenticate({
  * @return {[JSON]}         [Relevant information from webhook]
  */
 module.exports.processWebhook = function(webhook) {
-	return {
-		github: {
-			repo: webhook.pull_request.head.repo.name,
-			sha: webhook.pull_request.head.sha,
-			PRnumber: webhook.number,
-			user: webhook.pull_request.head.user.login,
-			gitURL: webhook.pull_request.head.repo.ssh_url,
-			branch: webhook.pull_request.head.ref
+	//Only run cloud on specified events
+	try {
+		if (config.github.pullRequest.runOn.indexOf(webhook.action) >= 0){
+			logger.debug('Webhook received! gathering relevant information');
+			return {
+				github: {
+					repo: webhook.pull_request.head.repo.name,
+					sha: webhook.pull_request.head.sha,
+					PRnumber: webhook.number,
+					user: webhook.pull_request.head.user.login,
+					gitURL: webhook.pull_request.head.repo.ssh_url,
+					branch: webhook.pull_request.head.ref
+				}
+			};
 		}
-	};
+		logger.debug('Nothing to do here');
+		return false;
+	} catch (e) {
+		logger.error('Invalid webhook');
+		logger.error(e);
+		return false;
+	}
 };
 
 /**
@@ -67,9 +85,7 @@ var setCommitStatus = function(testInfo, status) {
 		throw new Error();
 	});
 
-		)
-
-	github.statuses.createAsync(gitMessage)
+/*	github.statuses.createAsync(gitMessage)
 		.then(function () {
 			logger.debug(sprintf('Updated commit: %s to status %s'), gitMessage.sha, gitMessage.state);
 			resolve(testInfo);
@@ -80,7 +96,7 @@ var setCommitStatus = function(testInfo, status) {
 			logger.error(e);
 			var error = new Error('Failed to update github status');
 			reject(error);
-		});
+		});*/
 };
 
 /**

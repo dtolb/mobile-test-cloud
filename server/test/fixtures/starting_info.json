@@ -1,0 +1,10 @@
+{
+	"github":{
+		"repo":"public-repo",
+		"sha":"05c588ba8cd510ecbe112d020f215facb17817a6",
+		"PRnumber":50,
+		"user":"baxterthehacker",
+		"gitURL":"git@github.com:baxterthehacker/public-repo.git",
+		"branch":"changes"
+	}
+}

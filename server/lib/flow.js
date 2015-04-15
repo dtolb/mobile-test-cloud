@@ -4,6 +4,9 @@ var Promise = require('bluebird');
 
 module.exports.start = function(webhook) {
 	var testInfo = github.processWebhook(webhook);
+	if (!testInfo) {
+		return false;
+	}
 	github.setInitialStatus(testInfo)
 		.then(github.cloneRepo)
 		.then(utils.locateTestConfig)

@@ -20,5 +20,8 @@ module.exports.start = function (webhook) {
 		.catch(function (e) {
 			github.setErrorStatus(testInfo, e.message);
 		})
-		.finally(utils.cleanUp);
+		.finally(utils.cleanup)
+		.then(function () {
+			logger.info('All cleaned up, ready for next test!');
+		});
 };

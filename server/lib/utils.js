@@ -62,7 +62,6 @@ module.exports.locateTestConfig = function (testInfo) {
 			}
 			logger.silly(sprintf('Found Test Config: %s', file));
 			testInfo.testConfig = clone(testConfig);
-			console.log(testInfo);
 			return testInfo;
 		});
 };

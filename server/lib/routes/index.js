@@ -7,5 +7,5 @@ var router = module.exports = express.Router();
 
 router.route('/')
 	.get(function (req, res) {
-	res.send(200, {response: 'ring.to api'});
+	res.send(200, {response: 'Your Personal Mobile Test Cloud!'});
 });

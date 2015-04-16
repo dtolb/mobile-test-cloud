@@ -12,7 +12,7 @@ var path = require('path');
 config = {
 	server: {
 		port: process.env.PORT || 8081,
-		url: process.env.SERVER_URL
+		url: process.env.SERVER_URL || 'http://localhost:8081'
 	},
 	logging: {
 		request: {

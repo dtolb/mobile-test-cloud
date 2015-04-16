@@ -6,7 +6,7 @@ var sinon   = require('sinon');
 var glob = require('glob');
 var config = require('./../../lib/config.js');
 var Joi = require('joi');
-var fs = require('fs');
+var fs = require('fs-extra');
 
 describe('lib.util', function () {
 
@@ -168,9 +168,9 @@ describe('lib.util', function () {
 						repo: '',
 					};
 					return utils.locateTestConfig(testInfo)
-							.catch(function (e) {
-								expect(e.message).to.equal('Fail');
-							});
+						.catch(function (e) {
+							expect(e.message).to.equal('Fail');
+						});
 				});
 			});
 			describe('and it is NOT valid JSON', function () {
@@ -188,12 +188,82 @@ describe('lib.util', function () {
 						repo: '',
 					};
 					return utils.locateTestConfig(testInfo)
-							.catch(function (e) {
-								expect(e.name).to.equal('SyntaxError');
-							});
+						.catch(function (e) {
+							expect(e.name).to.equal('SyntaxError');
+						});
 				});
 			});
 		});
 	});
+	describe('::cleanupRepos', function () {
+		var fsRemoveAsyncStub;
+		beforeEach(function () {
+			fsRemoveAsyncStub = sinon.stub(fs, 'removeAsync', function (directory) {
+				return Promise.resolve(directory);
+			});
+		});
+		afterEach(function () {
+			fsRemoveAsyncStub.restore();
+		});
+		describe('When cleaning the repos', function () {
+			it('should remove the repos folder defined in config', function () {
+				return utils.cleanupRepos()
+					.then(function (res) {
+						expect(res).to.equal(config.directories.repos);
+					});
+			});
+		});
+	});
+	describe('::cleanupTests', function () {
+		var fsRemoveAsyncStub;
+		beforeEach(function () {
+			fsRemoveAsyncStub = sinon.stub(fs, 'removeAsync', function (directory) {
+				return Promise.resolve(directory);
+			});
+		});
+		afterEach(function () {
+			fsRemoveAsyncStub.restore();
+		});
+		describe('When cleaning the tests', function () {
+			it('should remove the tests folder defined in config', function () {
+				return utils.cleanupTests()
+					.then(function (res) {
+						expect(res).to.equal(config.directories.tests);
+					});
+			});
+		});
+	});
 
+	describe('::cleanup', function () {
+		var cleanupReposStub;
+		var cleanupTestsStub;
+		beforeEach(function () {
+			cleanupReposStub = sinon.stub(utils, 'cleanupRepos', function () {
+				var ret = {
+					repos: true
+				};
+				return Promise.resolve(ret);
+			});
+			cleanupTestsStub = sinon.stub(utils, 'cleanupTests', function (res) {
+				res.tests = true;
+				return Promise.resolve(res);
+			});
+		});
+		afterEach(function () {
+			cleanupReposStub.restore();
+			cleanupTestsStub.restore();
+		});
+		it('should call cleanupTests', function () {
+			return utils.cleanup()
+				.then(function (res) {
+					expect(res.tests).to.be.true;
+				});
+		});
+		it('should call cleanupRepos', function () {
+			return utils.cleanup()
+				.then(function (res) {
+					expect(res.repos).to.be.true;
+				});
+		});
+	});
 });

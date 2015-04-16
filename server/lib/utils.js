@@ -3,11 +3,10 @@ var clone   = require('clone');
 var Joi = require('joi');
 var Promise = require('bluebird');
 var glob = Promise.promisifyAll(require('glob'));
-var fs = Promise.promisifyAll(require('fs'));
+var fs = Promise.promisifyAll(require('fs-extra'));
 var path = require('path');
+var sprintf = require('sprintf-js').sprintf;
 var logger  = require('./logging.js').winstonLogger;
-
-//Promise.promisify(Joi.validate);
 
 /*module.exports.launchiOSEmulator = function (osVersion, device) {};
 module.exports.launchAndroidEmulator = function (osVersion, device) {};
@@ -44,6 +43,7 @@ module.exports.locateTestConfig = function (testInfo) {
 	var options = {
 		cwd: testInfo.local.repo
 	};
+	var file;
 	var match = '**/' + config.testConfigFileName;
 	return glob.globAsync(match, options)
 		.then(function (resultsArray) {
@@ -51,7 +51,7 @@ module.exports.locateTestConfig = function (testInfo) {
 				logger.error('Test Config not found, or too many configs found!');
 				throw new Error('Test config not valid, or too many configs found!');
 			}
-			var file = path.join(testInfo.local.repo, resultsArray[0]);
+			file = path.join(testInfo.local.repo, resultsArray[0]);
 			return fs.readFileAsync(file, 'utf8');
 		})
 		.then(JSON.parse)
@@ -60,7 +60,25 @@ module.exports.locateTestConfig = function (testInfo) {
 				logger.error('Test Config not valid!');
 				throw new Error('Test Config not valid!');
 			}
+			logger.silly(sprintf('Found Test Config: %s', file));
 			testInfo.testConfig = clone(testConfig);
+			console.log(testInfo);
 			return testInfo;
 		});
+};
+
+module.exports.cleanupRepos = function () {
+	logger.info(sprintf('Deleting: %s', config.directories.repos));
+	return fs.removeAsync(config.directories.repos);
+};
+
+module.exports.cleanupTests = function () {
+	logger.info(sprintf('Deleting: %s', config.directories.tests));
+	return fs.removeAsync(config.directories.tests);
+};
+
+module.exports.cleanup = function () {
+	logger.info('Removing folders for cleanup!');
+	return module.exports.cleanupRepos()
+		.then(module.exports.cleanupTests);
 };

@@ -11,5 +11,5 @@
 	},
 	"app" : "https://s3.amazonaws.com/ios-apps/MyApp.app",
 	"tests" : "https://github.com/awesomeness/ios-mobile-tests.git",
-	"pullrequestURL" : "" //added by travis
+	"pullrequestURL" : ""
 }

@@ -1,13 +1,7 @@
 {
 	"os" : "Android",
 	"devices": ["moto-x", "Galaxy-s3"],
-	"emulators" : {
-		"5.0.1" : {
-			"models" : ["Nexus 5", "Nexus 10"]
-		},
-		"4.4.4" : {
-			"models" : ["Nexus 4"]
-		}
-	},
-	"testDirectory" : "./tests", //location of tests within repo
+	"emulators" : ["5.0.1", "4.4.4" ],
+	"testDirectory" : "./tests",
+	"testCommand" : "grunt runTests"
 }

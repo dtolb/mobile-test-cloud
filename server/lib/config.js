@@ -61,6 +61,7 @@ testConfig = {
 			runOn: ['opened', 'reopened', 'synchronize']
 		}
 	},
+	testConfigFileName: 'mtc_config.json'
 };
 
 module.exports = (process.env.NODE_ENV === 'test') ? testConfig : config;

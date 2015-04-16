@@ -2,6 +2,7 @@
 var _ = require('lodash');
 
 module.exports = function (grunt) {
+	var coverage = 85; //set minimum threshold
 	var sourceFiles = ['*.js', 'lib/**/*.js'];
 	var testFiles = ['test/**/*.js'];
 	var allFiles = sourceFiles.concat(testFiles);
@@ -53,6 +54,19 @@ module.exports = function (grunt) {
 		clean: [ 'coverage', 'test/temp' ]
 	});
 
+	//Enable this later!
+	/*	if (process.env.CI){
+			grunt.event.on('coverage', function (lcov, done) {
+				require('coveralls').handleInput(lcov, function (err) {
+					if (err) {
+						return done(err);
+					}
+					done();
+				});
+			});
+		}
+	*/
+
 	grunt.registerTask('setupEnvironment', [], function () {
 		function ensureEnvironmentVariable (name, defaultValue) {
 			process.env[name] = process.env[name] || defaultValue;
@@ -68,8 +82,9 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks('grunt-contrib-jshint');
 	grunt.loadNpmTasks('grunt-jscs');
 	grunt.loadNpmTasks('grunt-mocha-istanbul');
-
-	grunt.registerTask('test', [ 'mocha_istanbul:coverage' ]);
+	//Enable this later!
+	//grunt.registerTask('test', [ 'mocha_istanbul:coverage' ]);
+	grunt.registerTask('test', [ 'mocha_istanbul' ]);
 
 	// Register tasks
 	grunt.registerTask('lint', 'Check for common code problems.', ['jshint']);

@@ -6,13 +6,13 @@ module.exports.createWinstonLogger = function (loggingConfig) {
 	var winstonLogger = new (winston.Logger)({
 		transports: [
 			new (winston.transports.Console)({
-			level: loggingConfig.app.level,
-			timestamp: true
-		})
-	]
-});
+				level: loggingConfig.app.level,
+				timestamp: true
+			})
+		]
+	});
 
-return winstonLogger;
+	return winstonLogger;
 };
 
 module.exports.winstonLogger = module.exports.createWinstonLogger(config.logging);

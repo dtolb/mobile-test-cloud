@@ -27,8 +27,8 @@ config = {
 		repos: path.join(__dirname,'./../../tmp/repos'),
 	},
 	s3: {
-		key: process.env.AWS_KEY,
-		secret: process.env.AWS_SECRET,
+		key: process.env.AMAZON_ACCESS_KEY_ID,
+		secret: process.env.AMAZON_SECRET_ACCESS_KEY,
 		bucket: process.env.MTC_S3_BUCKET
 	},
 	github: {
@@ -59,9 +59,9 @@ testConfig = {
 		repos: path.join(__dirname,'./../../tmp/repos'),
 	},
 	s3: {
-		key: process.env.AWS_KEY,
-		secret: process.env.AWS_SECRET,
-		bucket: process.env.MTC_S3_BUCKET
+		key: 'key',
+		secret: 'super-secret',
+		bucket: 'bucket'
 	},
 	github: {
 		username: 'dtolb',

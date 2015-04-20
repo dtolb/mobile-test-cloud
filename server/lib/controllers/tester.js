@@ -11,7 +11,7 @@ var flow    = require('../flow.js');
  */
 module.exports.startTest = function (req, res, next) {
 	//console.log('here we are');
-	logger.debug('New Pull Request Opened!');
+	logger.debug('New Pull Request Webook Received!');
 	logger.silly('Cloning webhook body');
 	var webhook = clone(req.body);
 	logger.silly('Starting test flow! Prepare for awesomeness');

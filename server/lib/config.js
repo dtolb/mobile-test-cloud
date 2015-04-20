@@ -26,7 +26,11 @@ config = {
 		tests: path.join(__dirname,'./../../tmp/tests'),
 		repos: path.join(__dirname,'./../../tmp/repos'),
 	},
-	s3: {},
+	s3: {
+		key: process.env.AWS_KEY,
+		secret: process.env.AWS_SECRET,
+		bucket: process.env.MTC_S3_BUCKET
+	},
 	github: {
 		username:  process.env.GITHUB_USERNAME,
 		password:  process.env.GITHUB_PASSWORD,
@@ -47,12 +51,17 @@ testConfig = {
 			level: 'dev'
 		},
 		app: {
-			level: process.env.APP_LOG_LEVEL || 'info'
+			level: process.env.APP_LOG_LEVEL || 'silly'
 		}
 	},
 	directories: {
 		tests: path.join(__dirname,'./../../tmp/tests'),
 		repos: path.join(__dirname,'./../../tmp/repos'),
+	},
+	s3: {
+		key: process.env.AWS_KEY,
+		secret: process.env.AWS_SECRET,
+		bucket: process.env.MTC_S3_BUCKET
 	},
 	github: {
 		username: 'dtolb',

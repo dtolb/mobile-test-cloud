@@ -1,6 +1,7 @@
 //var s3 = require('./s3.js');
 var github = require('./github.js');
 var utils = require('./utils.js');
+var tester = require('./tester.js');
 var logger  = require('./logging.js').winstonLogger;
 var Promise = require('bluebird');
 
@@ -13,7 +14,9 @@ module.exports.start = function (webhook) {
 	github.setInitialStatus(testInfo)
 		.then(github.cloneRepo)
 		.then(utils.locateTestConfig)
-		//.then(utils.runTest)
+		.then(utils.installTests)
+		.then(utils.runTest)
+		.then(github.setSuccessStatus)
 		.catch(github.GithubStatusError, function () {
 			logger.error('Unable to communicate with Github, failing');
 		})

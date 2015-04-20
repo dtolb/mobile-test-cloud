@@ -9,7 +9,9 @@ var Joi = require('joi');
 var fs = require('fs-extra');
 
 describe('lib.util', function () {
-
+	beforeEach(function () {
+		fx.reset();
+	});
 	describe('::validateTestConfig', function () {
 		var joiValidateStub;
 
@@ -90,7 +92,7 @@ describe('lib.util', function () {
 			var fsStub;
 			beforeEach(function () {
 				globAsyncStub = sinon.stub(glob, 'globAsync', function () {
-					return Promise.resolve(['1']);
+					return Promise.resolve(['string']);
 				});
 			});
 			afterEach(function () {
@@ -99,7 +101,7 @@ describe('lib.util', function () {
 			describe('and it can open the file', function () {
 				var validateTestConfigStub;
 				var tmpJson = {
-					three: 3
+					testDirectory: './here/'
 				};
 				beforeEach(function () {
 					fsStub = sinon.stub(fs, 'readFileAsync', function () {
@@ -121,7 +123,7 @@ describe('lib.util', function () {
 					it('should attach the testConfig to the testInfo Object', function () {
 						var testInfo = fx.starting_info;
 						testInfo.local = {
-							repo: '',
+							repo: 'string',
 						};
 						return utils.locateTestConfig(testInfo)
 							.then(function (res) {
@@ -145,7 +147,7 @@ describe('lib.util', function () {
 						};
 						return utils.locateTestConfig(testInfo)
 							.then(function (res) {
-								expect(res).to.equal('undefined');
+								expect(res).to.not.exist;
 							})
 							.catch(function (e) {
 								expect(e.message).to.equal('Test Config not valid!');

@@ -115,6 +115,19 @@ module.exports.setErrorStatus = function (testInfo, description) {
 };
 
 /**
+ * Sets the commit status to success
+ * @param {[JSON]} testInfo    [our test tracker]
+ * @param {[string]} description [describe the fail, most likely error]
+ */
+module.exports.setSuccessStatus = function (testInfo) {
+	var status = {
+		status: 'success',
+		description: 'Mobile Test Cloud Test Passed!'
+	};
+	return module.exports.setCommitStatus(testInfo, status);
+};
+
+/**
  * Clones the repository and branch from the pull request
  * @param  {[type]} testInfo [description]
  * @return {[type]}          [description]

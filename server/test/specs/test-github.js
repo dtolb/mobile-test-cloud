@@ -193,7 +193,7 @@ describe('lib.github', function () {
 			});
 		});
 
-		describe('::When it finishes', function () {
+		describe('When it finishes', function () {
 
 			beforeEach(function () {
 				setCommitStatusStub = sinon.stub(github, 'setCommitStatus', function (testInfo, status) {
@@ -212,6 +212,50 @@ describe('lib.github', function () {
 			});
 		});
 	});
+
+	describe('::setSuccessStatus', function () {
+		var setCommitStatusStub;
+
+		describe('it sets the status to \'success\'', function () {
+
+			beforeEach(function () {
+				setCommitStatusStub = sinon.stub(github, 'setCommitStatus', function (testInfo, status) {
+					return Promise.resolve(status.status);
+				});
+			});
+
+			afterEach(function () {
+				setCommitStatusStub.restore();
+			});
+
+			it('set the status correctly', function () {
+				return github.setSuccessStatus(fx.starting_info)
+				.then(function (res) {
+					expect(res).to.equal('success');
+				});
+			});
+		});
+
+		describe('When it finishes', function () {
+
+			beforeEach(function () {
+				setCommitStatusStub = sinon.stub(github, 'setCommitStatus', function (testInfo, status) {
+					return Promise.resolve(testInfo);
+				});
+			});
+			afterEach(function () {
+				setCommitStatusStub.restore();
+			});
+
+			it('should fulfill the promise with the testInfo', function () {
+				return github.setSuccessStatus(fx.starting_info)
+				.then(function (res) {
+					expect(res).to.deep.equal(fx.starting_info);
+				});
+			});
+		});
+	});
+
 	describe('::setErrorStatus', function () {
 		var setCommitStatusStub;
 		var fail = 'Could not clone repo';

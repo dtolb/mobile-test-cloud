@@ -16,5 +16,5 @@ module.exports.startTest = function (req, res, next) {
 	var webhook = clone(req.body);
 	logger.silly('Starting test flow! Prepare for awesomeness');
 	flow.start(webhook);
-	res.send(200);
+	res.sendStatus(200);
 };

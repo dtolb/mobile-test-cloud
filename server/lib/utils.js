@@ -22,6 +22,7 @@ module.exports.validateTestConfig = function (testConfig) {
 		devices: Joi.array(),
 		emulators: Joi.array(),
 		testDirectory: Joi.string(),
+		installCommand: Joi.string(),
 		testCommand: Joi.string()
 	});
 	var result = Joi.validate(testConfig, reqSchema);
@@ -62,20 +63,34 @@ module.exports.locateTestConfig = function (testInfo) {
 			}
 			logger.silly(sprintf('Found Test Config: %s', file));
 			testInfo.testConfig = clone(testConfig);
+			//Need to add test for this line.
+			testInfo.local.tests = path.join(testInfo.local.repo, testInfo.testConfig.testDirectory);
 			return testInfo;
 		});
 };
 
+/**
+ * Deletes the repository directory
+ * @return {[Promise]} [The result from deleting the directory]
+ */
 module.exports.cleanupRepos = function () {
 	logger.info(sprintf('Deleting: %s', config.directories.repos));
 	return fs.removeAsync(config.directories.repos);
 };
 
+/**
+ * Deletes the tests directory
+ * @return {[Promise]} [The result from deleting the directory]
+ */
 module.exports.cleanupTests = function () {
 	logger.info(sprintf('Deleting: %s', config.directories.tests));
 	return fs.removeAsync(config.directories.tests);
 };
 
+/**
+ * Deletes the tests and repos directory
+ * @return {[Promise]} [The result from deleting the directories]
+ */
 module.exports.cleanup = function () {
 	logger.info('Removing folders for cleanup!');
 	return module.exports.cleanupRepos()

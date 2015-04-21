@@ -25,11 +25,14 @@ config = {
 	directories: {
 		tests: path.join(__dirname,'./../../tmp/tests'),
 		repos: path.join(__dirname,'./../../tmp/repos'),
+		apps:  path.join(__dirname,'./../../tmp/apps')
 	},
 	s3: {
 		key: process.env.AMAZON_ACCESS_KEY_ID,
 		secret: process.env.AMAZON_SECRET_ACCESS_KEY,
-		bucket: process.env.MTC_S3_BUCKET
+		testBucket: process.env.MTC_TEST_BUCKET,
+		appBucket: process.env.MTC_APP_BUCKET,
+		appTimeout: process.env.MTC_APP_DOWNLOAD_TIMEOUT
 	},
 	github: {
 		username:  process.env.GITHUB_USERNAME,
@@ -57,11 +60,13 @@ testConfig = {
 	directories: {
 		tests: path.join(__dirname,'./../../tmp/tests'),
 		repos: path.join(__dirname,'./../../tmp/repos'),
+		apps:  path.join(__dirname,'./../../tmp/apps')
 	},
 	s3: {
 		key: 'key',
 		secret: 'super-secret',
-		bucket: 'bucket'
+		testBucket: 'testBucket',
+		appBucket: 'appBucket'
 	},
 	github: {
 		username: 'dtolb',

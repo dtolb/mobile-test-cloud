@@ -6,5 +6,8 @@
 		"user":"baxterthehacker",
 		"gitURL":"git@github.com:baxterthehacker/public-repo.git",
 		"branch":"changes"
+	},
+	"s3": {
+		"appLocation": "repo/public-repo/branch/changes/pr-number/50"
 	}
 }

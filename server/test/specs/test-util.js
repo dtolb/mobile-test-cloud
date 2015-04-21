@@ -101,7 +101,8 @@ describe('lib.util', function () {
 			describe('and it can open the file', function () {
 				var validateTestConfigStub;
 				var tmpJson = {
-					testDirectory: './here/'
+					testDirectory: './here/',
+					appName: 'Test.app'
 				};
 				beforeEach(function () {
 					fsStub = sinon.stub(fs, 'readFileAsync', function () {

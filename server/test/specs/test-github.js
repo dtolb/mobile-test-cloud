@@ -132,26 +132,13 @@ describe('lib.github', function () {
 			});
 			describe('When s3 location is provided', function () {
 				it('should use that location for the target_url', function () {
+					var location = 's3-location';
 					statusStub = sinon.stub(github.githubapi.statuses, 'createAsync', function (gitMessage) {
 						expect(gitMessage.target_url).to.equal(location);
 						return Promise.resolve();
 					});
 					var testInfo = fx.starting_info;
-					var location = 's3-location';
-					testInfo.s3 = {
-						location: location
-					};
-					return github.setCommitStatus(testInfo, {status: 'success'});
-				});
-			});
-
-			describe('When s3 information is not provided', function () {
-				it('should use a blank target_url', function () {
-					statusStub = sinon.stub(github.githubapi.statuses, 'createAsync', function (gitMessage) {
-						expect(gitMessage.target_url).to.equal('');
-						return Promise.resolve();
-					});
-					var testInfo = fx.starting_info;
+					testInfo.s3.testResultLocation = location;
 					return github.setCommitStatus(testInfo, {status: 'success'});
 				});
 			});
@@ -163,8 +150,6 @@ describe('lib.github', function () {
 						return Promise.resolve();
 					});
 					var testInfo = fx.starting_info;
-					var location = 's3-location';
-					testInfo.s3 = {};
 					return github.setCommitStatus(testInfo, {status: 'success'});
 				});
 			});

@@ -1,4 +1,3 @@
-//var s3 = require('./s3.js');
 var github = require('./github.js');
 var utils = require('./utils.js');
 var s3 = require('./s3.js');
@@ -15,6 +14,9 @@ module.exports.start = function (webhook) {
 	github.setInitialStatus(testInfo)
 		.then(github.cloneRepo)
 		.then(utils.locateTestConfig)
+		.then(s3.waitUntilAppExists)
+		.then(s3.downloadApp)
+		.then(utils.setAppLocation)
 		.then(tester.installTests)
 		.then(tester.runTest)
 		.then(s3.uploadResults)

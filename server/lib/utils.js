@@ -23,7 +23,8 @@ module.exports.validateTestConfig = function (testConfig) {
 		emulators: Joi.array(),
 		testDirectory: Joi.string(),
 		installCommand: Joi.string(),
-		testCommand: Joi.string()
+		testCommand: Joi.string(),
+		appName: Joi.string()
 	});
 	var result = Joi.validate(testConfig, reqSchema);
 	if (result.error === null) {
@@ -65,6 +66,7 @@ module.exports.locateTestConfig = function (testInfo) {
 			testInfo.testConfig = clone(testConfig);
 			//Need to add test for this line.
 			testInfo.local.tests = path.join(testInfo.local.repo, testInfo.testConfig.testDirectory);
+			testInfo.s3.appLocation = path.join(testInfo.s3.appLocation, testInfo.testConfig.appName);
 			return testInfo;
 		});
 };

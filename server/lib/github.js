@@ -31,6 +31,10 @@ module.exports.processWebhook = function (webhook) {
 	try {
 		if (config.github.pullRequest.runOn.indexOf(webhook.action) >= 0){
 			logger.debug('Webhook received! gathering relevant information');
+			var appLocation = sprintf('repo/%s/branch/%s/pr-number/%s',
+								webhook.pull_request.head.repo.name,
+								webhook.pull_request.head.ref,
+								webhook.number);
 			return {
 				github: {
 					repo: webhook.pull_request.head.repo.name,
@@ -39,6 +43,9 @@ module.exports.processWebhook = function (webhook) {
 					user: webhook.pull_request.head.user.login,
 					gitURL: webhook.pull_request.head.repo.ssh_url,
 					branch: webhook.pull_request.head.ref
+				},
+				s3: {
+					appLocation: appLocation
 				}
 			};
 		}
@@ -65,11 +72,11 @@ module.exports.setCommitStatus = function (testInfo, status) {
 
 	var targetUrl;
 
-	if (typeof testInfo.s3 === 'undefined' || typeof testInfo.s3.location === 'undefined') {
+	if (typeof testInfo.s3.testResultLocation === 'undefined') {
 		targetUrl = '';
 	}
 	else {
-		targetUrl = testInfo.s3.location;
+		targetUrl = testInfo.s3.testResultLocation;
 	}
 
 	var gitMessage = {

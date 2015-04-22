@@ -25,7 +25,14 @@ module.exports.start = function (webhook) {
 			logger.error('Unable to communicate with Github, failing');
 		})
 		.catch(function (e) {
-			github.setErrorStatus(testInfo, e.message);
+			return s3.uploadResults(testInfo)
+				.then(function (res) {
+					tester.killAppium(res);
+					github.setErrorStatus(res, e.message);
+				})
+				.catch(function (error) {
+					github.setErrorStatus(testInfo, error.message);
+				});
 		})
 		.finally(utils.cleanup)
 		.then(function () {

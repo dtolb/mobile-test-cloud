@@ -165,6 +165,7 @@ module.exports.runAndroidTest = function (testInfo, id) {
 		.catch(function (error) {
 			var e;
 			logger.error(error);
+			testInfo.results.testResults[deviceName] = error;
 			if (error.code !== 0) {
 				e = new Error('Tests Failed!');
 				logger.error(e);
@@ -197,6 +198,7 @@ module.exports.runiOSTest = function (testInfo, id) {
 		.catch(function (error) {
 			var e;
 			logger.error(error);
+			testInfo.results.testResults[id] = error;
 			if (error.code !== 0) {
 				e = new Error('Tests Failed!');
 				logger.error(e);
@@ -212,8 +214,10 @@ module.exports.runiOSTest = function (testInfo, id) {
 
 module.exports.killAppium = function (testInfo) {
 	logger.debug('Killing appium server');
-	testInfo.appiumServer.kill();
-	delete testInfo.appiumServer;
+	if (typeof testInfo.appiumServer !== 'undefined'){
+		testInfo.appiumServer.kill();
+		delete testInfo.appiumServer;
+	}
 	return testInfo;
 };
 
@@ -240,7 +244,7 @@ module.exports.runTests = function (testInfo) {
 					}
 					//return module.exports.runiOSTest(res, id);
 				})
-				.then(function (res) {
+/*				.then(function (res) {
 					//console.log(res);
 					count += 1;
 					if (count === testInfo.local.devices.length) { // check if all done
@@ -248,12 +252,20 @@ module.exports.runTests = function (testInfo) {
 						resolve(res);
 					}
 					return res;
-				})
-				.then(module.exports.killAppium)
-				.catch(function (e) {
+				})*/
+				.then(module.exports.killAppium);
+/*				.catch(function (e) {
 					console.log(e);
 					reject(e);
-				});
+				});*/
+		});
+		a = a.then(function (res) {
+			logger.info('Finished Running Tests!');
+			resolve(res);
+		})
+		.catch(function (e) {
+			console.log(e);
+			reject(e);
 		});
 
 	});
@@ -267,7 +279,7 @@ module.exports.spawnAppium = function (testInfo, id) {
 		testInfo.appiumServer = child_process.spawn('appium',
 			['-U', id, '-p', config.startingAppiumPort, '--app', testInfo.local.app]);
 		testInfo.appiumServer.stderr.on('data', function (data) {
-			console.error(data.toString());
+			logger.error(data.toString());
 			reject(data.toString());
 		});
 		testInfo.appiumServer.stdout.on('data', function (data) {
@@ -276,9 +288,7 @@ module.exports.spawnAppium = function (testInfo, id) {
 				logger.debug(sprintf('Appium started with --p: %s', config.startingAppiumPort));
 				logger.debug(sprintf('Appium started with -U: %s', id));
 				started = true;
-				//console.log('Server Started!');
-				//console.log(server);
-				console.log(data.toString());
+				logger.silly(data.toString());
 				resolve(testInfo);
 			}
 		});

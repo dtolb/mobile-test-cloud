@@ -1,10 +1,10 @@
+var Promise = require('bluebird');
 var config = require('./config.js');
 var knox = require('knox');
 var path = require('path');
 var fs = Promise.promisifyAll(require('fs-extra'));
 var logger  = require('./logging.js').winstonLogger;
 var sprintf = require('sprintf-js').sprintf;
-var Promise = require('bluebird');
 
 /**
  * Points to the bucket to store the results
@@ -69,9 +69,11 @@ module.exports.checkIfAppExists = function (testInfo) {
 	return AppDownloaderClient.listAsync({prefix: testInfo.s3.appLocation})
 		.then(function (res) {
 			if (res.Contents.length !== 1) {
+				logger.silly(sprintf('App still not available at: %s', testInfo.s3.appLocation));
 				return false;
 			}
 			else {
+				logger.debug(sprintf('App found at location: %s', testInfo.s3.appLocation));
 				return true;
 			}
 		});
@@ -84,9 +86,11 @@ module.exports.checkIfAppExists = function (testInfo) {
  */
 module.exports.waitUntilAppExists = function (testInfo) {
 	return new Promise(function (resolve, reject) {
+		logger.silly('Waiting on app to exist');
 		var currTime = Date.now();
 		(function tick () {
 			if ((Date.now() - currTime) > (config.s3.appTimeout * 60 * 1000)) {
+				logger.error(sprintf('%s minute timeout hit waiting on app to appear'),config.s3.appTimeout);
 				reject(new Error('Timeout waiting on app to appear'));
 				return;
 			}
@@ -110,6 +114,7 @@ module.exports.waitUntilAppExists = function (testInfo) {
  * @return {[Promise]}          [Eventually resolved with testInfo]
  */
 module.exports.downloadApp = function (testInfo) {
+	logger.debug(sprintf('Downloading app from:%s', testInfo.s3.appLocation));
 	return AppDownloaderClient.getFileAsync(testInfo.s3.appLocation)
 		.then(function (res) {
 			return new Promise(function (resolve, reject) {
@@ -120,6 +125,7 @@ module.exports.downloadApp = function (testInfo) {
 				}
 				testInfo.local.app = path.join(config.directories.apps, testInfo.testConfig.appName);
 				var localApp = fs.createWriteStream(testInfo.local.app);
+				logger.info(sprintf('Downloading app to: ', testInfo.local.app));
 				res.pipe(localApp)
 					.on('finish', resolve)
 					.on('error', reject);

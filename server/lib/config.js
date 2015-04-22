@@ -41,7 +41,8 @@ config = {
 			runOn: ['opened', 'reopened', 'synchronize']
 		}
 	},
-	testConfigFileName: 'mtc_config.json'
+	testConfigFileName: 'mtc_config.json',
+	startingAppiumPort: process.env.APPIUM_PORT
 };
 
 testConfig = {
@@ -66,7 +67,8 @@ testConfig = {
 		key: 'key',
 		secret: 'super-secret',
 		testBucket: 'testBucket',
-		appBucket: 'appBucket'
+		appBucket: 'appBucket',
+		appTimeout: 1
 	},
 	github: {
 		username: 'dtolb',
@@ -75,7 +77,8 @@ testConfig = {
 			runOn: ['opened', 'reopened', 'synchronize']
 		}
 	},
-	testConfigFileName: 'mtc_config.json'
+	testConfigFileName: 'mtc_config.json',
+	startingAppiumPort: 4972
 };
 
 module.exports = (process.env.NODE_ENV === 'test') ? testConfig : config;

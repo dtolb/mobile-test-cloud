@@ -65,10 +65,15 @@ module.exports.locateTestConfig = function (testInfo) {
 			logger.silly(sprintf('Found Test Config: %s', file));
 			testInfo.testConfig = clone(testConfig);
 			//Need to add test for this line.
+			testInfo.testConfig.os = testInfo.testConfig.os.toLowerCase();
 			testInfo.local.tests = path.join(testInfo.local.repo, testInfo.testConfig.testDirectory);
 			testInfo.s3.appLocation = path.join(testInfo.s3.appLocation, testInfo.testConfig.appName);
 			return testInfo;
 		});
+};
+
+module.exports.setEnvVar = function (testInfo) {
+
 };
 
 /**

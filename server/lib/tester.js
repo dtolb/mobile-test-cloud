@@ -153,6 +153,8 @@ module.exports.runAndroidTest = function (testInfo, id) {
 	return module.exports.getAndroidDeviceInfo(id)
 		.then(function (deviceInfo) {
 			deviceName = deviceInfo;
+			logger.debug(sprintf('Running test command: %s', testInfo.testConfig.testCommand));
+			logger.debug(sprintf('Running tests with options: %s', JSON.stringify(options)));
 			return child_process.execAsync(testInfo.testConfig.testCommand, options);
 		})
 		.spread(function (stdout, stderr) {
@@ -270,9 +272,13 @@ module.exports.spawnAppium = function (testInfo, id) {
 		});
 		testInfo.appiumServer.stdout.on('data', function (data) {
 			if (!started && data.toString().indexOf('Appium REST http interface listener started') > -1) {
+				logger.debug(sprintf('Appium started with --app: %s', testInfo.local.app));
+				logger.debug(sprintf('Appium started with --p: %s', config.startingAppiumPort));
+				logger.debug(sprintf('Appium started with -U: %s', id));
 				started = true;
 				//console.log('Server Started!');
 				//console.log(server);
+				console.log(data.toString());
 				resolve(testInfo);
 			}
 		});
@@ -291,7 +297,7 @@ module.exports.runTest = function (testInfo) {
 	};
 	return child_process.execAsync(testInfo.testConfig.testCommand, options)
 		.spread(function (stdout, stderr) {
-			testInfo.results.testResults =  stdout;
+			testInfo.results.testResults = stdout;
 			return testInfo;
 		})
 		.catch(function (error) {

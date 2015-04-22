@@ -114,7 +114,7 @@ module.exports.waitUntilAppExists = function (testInfo) {
  * @return {[Promise]}          [Eventually resolved with testInfo]
  */
 module.exports.downloadApp = function (testInfo) {
-	logger.debug(sprintf('Downloading app from:%s', testInfo.s3.appLocation));
+	logger.debug(sprintf('Downloading app from: %s', testInfo.s3.appLocation));
 	return AppDownloaderClient.getFileAsync(testInfo.s3.appLocation)
 		.then(function (res) {
 			return new Promise(function (resolve, reject) {
@@ -125,7 +125,7 @@ module.exports.downloadApp = function (testInfo) {
 				}
 				testInfo.local.app = path.join(config.directories.apps, testInfo.testConfig.appName);
 				var localApp = fs.createWriteStream(testInfo.local.app);
-				logger.info(sprintf('Downloading app to: ', testInfo.local.app));
+				logger.info(sprintf('Downloading app to: %s', testInfo.local.app));
 				res.pipe(localApp)
 					.on('finish', resolve)
 					.on('error', reject);

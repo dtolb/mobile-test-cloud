@@ -19,8 +19,8 @@ module.exports.launchAndroidEmulator = function (osVersion, device) {};
 module.exports.validateTestConfig = function (testConfig) {
 	var reqSchema = Joi.object().keys({
 		os: Joi.string().regex(/(android)|(ios)|(Android)|(iOS)/),
-		devices: Joi.array(),
-		emulators: Joi.array(),
+//		devices: Joi.array(),
+//		emulators: Joi.array(),
 		testDirectory: Joi.string(),
 		installCommand: Joi.string(),
 		testCommand: Joi.string(),

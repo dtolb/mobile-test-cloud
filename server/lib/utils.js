@@ -72,10 +72,6 @@ module.exports.locateTestConfig = function (testInfo) {
 		});
 };
 
-module.exports.setEnvVar = function (testInfo) {
-
-};
-
 /**
  * Deletes the repository directory
  * @return {[Promise]} [The result from deleting the directory]

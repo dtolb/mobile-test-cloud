@@ -16,9 +16,9 @@ module.exports.start = function (webhook) {
 		.then(utils.locateTestConfig)
 		.then(s3.waitUntilAppExists)
 		.then(s3.downloadApp)
-		.then(utils.setAppLocation)
 		.then(tester.installTests)
-		.then(tester.runTest)
+		.then(tester.detectDevices)
+		.then(tester.runTests)
 		.then(s3.uploadResults)
 		.then(github.setSuccessStatus)
 		.catch(github.GithubStatusError, function () {

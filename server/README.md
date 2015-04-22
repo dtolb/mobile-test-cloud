@@ -5,3 +5,5 @@ Requires SSH key to be loaded into github. Follow the instructions here: https:/
 Requires s3 bucket to be set to public (to view results): https://ariejan.net/2010/12/24/public-readable-amazon-s3-bucket-policy/
 
 brew install ideviceinstaller
+
+https://discuss.appium.io/t/ios-8-1-real-devices-you-need-to-enable-ui-automation-setting/1271

@@ -131,6 +131,32 @@ sti.local = {
 	tests: '/Users/dtolbert/code/mtc-demos/appium-java/junit'
 };
 
+var ste = {};
+ste.github = {
+	repo: 'public-repo',
+	sha: '05c588ba8cd510ecbe112d020f215facb17817a6',
+	PRnumber:50,
+	user:'baxterthehacker',
+	gitURL:'git@github.com:baxterthehacker/public-repo.git',
+	branch:'changes'
+};
+ste.s3 = {
+	appLocation: 'repo/jailbreak-android/RingTo.apk'
+};
+ste.results = {
+	install: 'here would be install results',
+	testResults: 'here would be test results'
+};
+ste.testConfig = {
+	appName: 'RingTo.apk',
+	os: 'ios',
+	testCommand: 'mocha ios-simple.js'
+};
+ste.local = {
+	app: '/Users/dtolbert/code/mtc-demos/apps/TestApp.app',
+	tests: '/Users/dtolbert/code/mtc-demos/appium-node'
+};
+
 module.exports.getAndroidDeviceInfo = function (id) {
 	logger.debug('Gathering Device information');
 	var cmd = sprintf('adb -s %s shell getprop ro.product.model', id);
@@ -159,6 +185,33 @@ module.exports.detectiOSDevices = function (testInfo) {
 	//Get UUID for connected iOS devices
 	var cmd = 'system_profiler SPUSBDataType | sed -n -e \'/iPad/,/Serial/p\' -e \'/iPhone/,/Serial/p\'' +
 		' | grep "Serial Number:" | awk -F ": " \'{print $2}\'';
+	return child_process.execAsync(cmd)
+		.spread(function (stdout, stderr) {
+			var devices = stdout.split('\n').filter(function (line) {
+				return line.match(/(.+)/);
+			})
+			.map(function (line) {
+				return line;
+			});
+			logger.silly(sprintf('Detected %s devices', devices.length));
+			logger.silly(devices);
+			testInfo.local.devices = devices;
+			return testInfo;
+		})
+		.catch(function (error) {
+			var e;
+			logger.error(error);
+			if (error.code !== 0) {
+				e = new Error('Unable to detect android devices');
+				logger.error(e);
+				throw e;
+			}
+			else {
+				e = new Error('Unknown error detecting android devices');
+				logger.log(e);
+				throw e;
+			}
+		});
 };
 
 module.exports.detectAndroidDevices = function (testInfo) {
@@ -179,12 +232,12 @@ module.exports.detectAndroidDevices = function (testInfo) {
 			var e;
 			logger.error(error);
 			if (error.code !== 0) {
-				e = new Error('Unable to detect android tests');
+				e = new Error('Unable to detect android devices');
 				logger.error(e);
 				throw e;
 			}
 			else {
-				e = new Error('Unknown error detecting android tests');
+				e = new Error('Unknown error detecting android devices');
 				logger.log(e);
 				throw e;
 			}
@@ -194,11 +247,16 @@ module.exports.detectAndroidDevices = function (testInfo) {
 module.exports.detectDevices = function (testInfo) {
 	logger.debug('Detecting Devices');
 	if (testInfo.testConfig.os === 'ios') {
-		return
+		logger.silly('Detecting iOS Devices');
+		return module.exports.detectiOSDevices(testInfo);
 
 	}
 	else if (testInfo.testConfig.os === 'android') {
+		logger.silly('Detecting Android Devices');
 		return module.exports.detectAndroidDevices(testInfo);
+	}
+	else {
+		return Promise.reject(new Error('Unknown testConfig OS'));
 	}
 };
 
@@ -239,6 +297,38 @@ module.exports.runAndroidTest = function (testInfo, id) {
 		});
 };
 
+/**
+ * Runs the tests based on the requirements
+ * @param  {[type]} testInfo [Our test Config]
+ * @return {[Promise]}          [Will fullfill with testInfo]
+ */
+module.exports.runiOSTest = function (testInfo, id) {
+	logger.info('Running a test!!');
+	var options = {
+		cwd: testInfo.local.tests
+	};
+	return child_process.execAsync(testInfo.testConfig.testCommand, options)
+		.spread(function (stdout, stderr) {
+			//testInfo.results.testResults = stdout;
+			testInfo.results.testResults[id] = stdout;
+			return testInfo;
+		})
+		.catch(function (error) {
+			var e;
+			logger.error(error);
+			if (error.code !== 0) {
+				e = new Error('Tests Failed!');
+				logger.error(e);
+				throw e;
+			}
+			else {
+				e = new Error('Unknown error running tests');
+				logger.log(e);
+				throw e;
+			}
+		});
+};
+
 module.exports.killAppium = function (testInfo) {
 	logger.debug('Killing appium server');
 	testInfo.appiumServer.kill();
@@ -258,8 +348,14 @@ module.exports.runTests = function (testInfo) {
 				})
 				//.then(module.exports.runTest)
 				.then(function (res) {
-					if (res.testConfig.os.toLowerCase() === 'android') {
+					if (res.testConfig.os === 'android') {
 						return module.exports.runAndroidTest(res, id);
+					}
+					else if (testInfo.testConfig.os === 'ios') {
+						return module.exports.runiOSTest(testInfo, id);
+					}
+					else {
+						return Promise.reject(new Error('Unknown testConfig OS'));
 					}
 					//return module.exports.runiOSTest(res, id);
 				})
@@ -303,7 +399,15 @@ module.exports.spawnAppium = function (testInfo, id) {
 		});
 	});
 };
-module.exports.detectDevices(sti)
+
+module.exports.detectDevices(ste)
+	.then(module.exports.runTests)
+	.then(function (res) {
+		console.log(res);
+	});
+
+
+/*module.exports.detectDevices(sti)
 	.then(module.exports.runTests)
 	.then(function (res) {
 		console.log('here i am ??');
@@ -313,7 +417,7 @@ module.exports.detectDevices(sti)
 	.catch(function (e) {
 		console.log('FAILURE');
 		console.log(e);
-	});
+	});*/
 
 /*module.exports.spawnAppium = function (testInfo, id) {
 	logger.info('Spawning appium');

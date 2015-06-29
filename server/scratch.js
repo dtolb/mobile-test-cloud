@@ -123,7 +123,7 @@ sti.results = {
 };
 sti.testConfig = {
 	appName: 'RingTo.apk',
-	os: 'Android',
+	os: 'android',
 	testCommand: 'mvn -Dtest=com.saucelabs.appium.AndroidTest test'
 };
 sti.local = {
@@ -400,14 +400,14 @@ module.exports.spawnAppium = function (testInfo, id) {
 	});
 };
 
-module.exports.detectDevices(ste)
+/*module.exports.detectDevices(ste)
 	.then(module.exports.runTests)
 	.then(function (res) {
 		console.log(res);
-	});
+	});*/
 
 
-/*module.exports.detectDevices(sti)
+module.exports.detectDevices(sti)
 	.then(module.exports.runTests)
 	.then(function (res) {
 		console.log('here i am ??');
@@ -417,7 +417,7 @@ module.exports.detectDevices(ste)
 	.catch(function (e) {
 		console.log('FAILURE');
 		console.log(e);
-	});*/
+	});
 
 /*module.exports.spawnAppium = function (testInfo, id) {
 	logger.info('Spawning appium');

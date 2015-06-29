@@ -1,0 +1,8 @@
+{
+	"os" : "Android",
+	"devices": ["moto-x", "Galaxy-s3"],
+	"testDirectory" : "sample-code/examples/node",
+	"installCommand" : "npm install",
+	"testCommand" : "mocha ios-simple.js",
+	"appName" : "something"
+}

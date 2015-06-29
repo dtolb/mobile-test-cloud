@@ -45,6 +45,7 @@ module.exports.uploadResults = function (testInfo) {
 		});
 		req.on('response', function (res) {
 			if (res.statusCode !== 200) {
+				console.log(res);
 				var e = new Error('Unable to upload results to s3');
 				logger.error(sprintf('S3 returned: %s, unable to upload results',
 					res.statusCode));
